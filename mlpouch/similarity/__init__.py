@@ -1,0 +1,1 @@
+from mlpouch.similarity.DotProduct import DotProduct
