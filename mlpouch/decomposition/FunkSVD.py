@@ -87,4 +87,15 @@ class FunkSVD(TransformerMixin, BaseEstimator, BaseRecommender):
         return X_matrix
 
     def recommend(self, U, rec_num = 5):
-        pass
+        recommends = []
+
+        for U_item in U:
+            recommends.append([ U_item, self._recommend(U_item, rec_num) ])
+
+        return recommends
+
+    def _recommend(self, U_item, rec_num = 5):
+        return self.X_transformed.loc[U_item] \
+            .sort_values(ascending = False) \
+            .head(rec_num) \
+            .index.tolist()
