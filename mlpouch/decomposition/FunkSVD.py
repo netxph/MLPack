@@ -13,7 +13,7 @@ class FunkSVD(TransformerMixin, BaseEstimator, BaseRecommender):
 
     def fit(self, X, y = None):
 
-        X_matrix = self.fit_transform(self, X, y)
+        X_matrix = self.fit_transform(X, y)
 
         X_transformed = pd.DataFrame(X_matrix)
         X_transformed[self.U_index.name] = self.U_index.array
