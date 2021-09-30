@@ -9,7 +9,14 @@ class DotProduct(TransformerMixin, BaseEstimator):
         pass
 
     def fit(self, X, y = None):
-        self.X_transformed = self.fit_transform(X)
+        dot_prod = self.fit_transform(X)
+
+        X_transformed = pd.DataFrame(dot_prod)
+        X_transformed.columns = X.index.tolist()
+        X_transformed[X.index.name] = self.X_index
+        X_transformed.set_index(X.index.name, inplace=True)
+
+        self.X_transformed = X_transformed
 
         return self 
 
@@ -17,16 +24,7 @@ class DotProduct(TransformerMixin, BaseEstimator):
         self.X_index = X.index
 
         # dot product to get similar movies
-        X_sub = np.array(X.iloc[:,4:])
-        dot_prod = X_sub.dot(np.transpose(X_sub))
+        X_arr = np.array(X)
+        dot_prod = X_arr.dot(np.transpose(X_arr))
 
-        logging.debug(f"Dot product done. Shape {dot_prod.shape}.")
-
-        X_transformed = pd.DataFrame(dot_prod)
-        X_transformed.columns = X.index.tolist()
-        X_transformed[X.index.name] = self.X_index
-        X_transformed.set_index(X.index.name, inplace=True)
-
-        logging.debug("Dataframe restructuring done.")
-
-        return X_transformed
+        return dot_prod

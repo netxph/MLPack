@@ -1,9 +1,10 @@
 from sklearn.base import BaseEstimator, TransformerMixin
+from mlpouch import BaseRecommender
 import logging
 import numpy as np
 import pandas as pd
 
-class FunkSVD(TransformerMixin, BaseEstimator):
+class FunkSVD(TransformerMixin, BaseEstimator, BaseRecommender):
     
     def __init__(self, latent_features = 4, learning_rate = 0.0001, iters = 100):
         self.latent_features = latent_features
@@ -12,7 +13,14 @@ class FunkSVD(TransformerMixin, BaseEstimator):
 
     def fit(self, X, y = None):
 
-        self.X_transformed = self.fit_transform(self, X, y)
+        X_matrix = self.fit_transform(self, X, y)
+
+        X_transformed = pd.DataFrame(X_matrix)
+        X_transformed[self.U_index.name] = self.U_index.array
+        X_transformed = X_transformed.set_index(self.U_index.name)
+        X_transformed.columns = self.VT_index
+
+        self.X_transformed = X_transformed
 
         return self
 
@@ -75,9 +83,8 @@ class FunkSVD(TransformerMixin, BaseEstimator):
 
         X_matrix = np.dot(self.U_matrix, self.VT_matrix)
 
-        X_transformed = pd.DataFrame(X_matrix)
-        X_transformed[self.U_index.name] = self.U_index.array
-        X_transformed = X_transformed.set_index(self.U_index.name)
-        X_transformed.columns = self.VT_index
 
-        return X_transformed
+        return X_matrix
+
+    def recommend(self, U, rec_num = 5):
+        pass
